@@ -53,7 +53,9 @@
                     url: configuration.coursesUrl,
                     data: { sid: configuration.organizationId }
                 }).done(function (data) {
-                    console.log("[Page.displayCourseList]: Number of items returned: " + data.length);
+
+                    console.log(data);
+                    //console.log("[Page.displayCourseList]: Number of items returned: " + data.length);
 
                     // Render the courses.
                     Page.renderCourseList(data);
@@ -66,8 +68,18 @@
             // Fetch the data and render the page.
             Page.displayStudentList = function () {
 
-                var data = {}
-                Page.renderStudentList(data);
+                $.ajax({
+                  type: "GET",
+                  url: configuration.studentsUrl,
+                  data: {sid: configuration.organizationId}
+                }).done(function (data){
+                  console.log(data);
+
+                  Page.renderStudentList(data);
+                });
+                //var data = {}
+                //Page.renderStudentList(data);
+                //console.log("[Page.displayStudentList]: Number of items returned: " + data.length);
 
             }
 
@@ -141,13 +153,32 @@
                 configuration.courseListPlaceholder.fadeIn(500);
             }
 
-            Page.renderStudentList = function () {
-                configuration.studentListPlaceholder.empty();
+            Page.renderStudentList = function (students) {
+              var tbody = $("#studentListTable tbody");
+              tbody.empty();
 
-                var view = "Student list...";
-                configuration.studentListPlaceholder.append(view);
+              var html = "";
+              for (var index = 0; index < students.length; index++) {
+                  html += "<tr>";
+                  html += "<td>" + students[index].id + "</td>";
+                  html += "<td>" + students[index].firstName+ "</td>";
+                  html += "<td>" + students[index].lastName + "</td>";
+                  //html += "<td>" + courses[index].students.length + "</td>";
+                  html += "</tr>";
+              }
+              tbody.append(html);
 
-                configuration.studentListPlaceholder.fadeIn(500);
+              configuration.studentListPlaceholder.fadeIn(500);
+
+
+
+
+                //configuration.studentListPlaceholder.empty();
+
+                //var view = "Student list...";
+                //configuration.studentListPlaceholder.append(view);
+
+                //configuration.studentListPlaceholder.fadeIn(500);
             }
 
             Page.displayCourseDetails = function (id) {
@@ -375,6 +406,7 @@
                         configuration.defaultPlaceholder.hide();
                         configuration.courseListPlaceholder.hide();
 
+
                         Page.displayStudentList();
 
                         break;
@@ -385,6 +417,7 @@
 
                         var course = Page.getCourseTemplate();
                         Page.renderCourseDetails(course);
+
 
                         break;
                     default:
